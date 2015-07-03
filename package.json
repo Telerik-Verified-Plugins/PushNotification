@@ -1,0 +1,29 @@
+{
+  "name": "cordova-plugin-push-notification",
+  "version": "2.5.4",
+  "description": "Cordova Push Plugin",
+  "cordova": {
+    "id": "cordova-plugin-push-notification",
+    "platforms": [
+      "android",
+      "ios",
+      "wp8",
+      "windows8"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Telerik-Verified-Plugins/PushNotification.git"
+  },
+  "keywords": [
+    "cordova",
+    "push-notification",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios",
+    "cordova-wp8",
+    "cordova-windows8"
+  ],
+  "author": "Telerik (originally created by Bob Easterday)",
+  "license": "MIT"
+}

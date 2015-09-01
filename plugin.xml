@@ -28,13 +28,14 @@
 		<engine name="cordova" version=">=3.0.0"/>
 	</engines>
 
-	<dependency id="org.apache.cordova.device"/>
-	<dependency id="org.apache.cordova.globalization"/>
+	<dependency id="cordova-plugin-device"/>
+	<dependency id="cordova-plugin-globalization"/>
 
 	<!-- android -->
 	<platform name="android">
 
-		<dependency id="com.google.playservices" url="https://github.com/MobileChromeApps/google-play-services.git"/>
+		<framework src="com.google.android.gms:play-services:7.5.0" />
+		<framework src="com.android.support:support-v4:22.2.0" />
 
 		<config-file target="res/xml/config.xml" parent="/*">
 			<feature name="PushPlugin">
@@ -67,7 +68,7 @@
 		<source-file src="src/android/com/plugin/gcm/CordovaGCMBroadcastReceiver.java" target-dir="src/com/plugin/gcm/"/>
 		<source-file src="src/android/com/plugin/gcm/PushHandlerActivity.java" target-dir="src/com/plugin/gcm/"/>
 		<source-file src="src/android/com/plugin/gcm/PushPlugin.java" target-dir="src/com/plugin/gcm/"/>
-		<source-file src="src/android/com/plugin/android-support-v4.jar" target-dir="libs/"/>
+		
 
 	</platform>
 

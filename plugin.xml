@@ -67,7 +67,7 @@
 		<source-file src="src/android/com/plugin/gcm/CordovaGCMBroadcastReceiver.java" target-dir="src/com/plugin/gcm/"/>
 		<source-file src="src/android/com/plugin/gcm/PushHandlerActivity.java" target-dir="src/com/plugin/gcm/"/>
 		<source-file src="src/android/com/plugin/gcm/PushPlugin.java" target-dir="src/com/plugin/gcm/"/>
-		<source-file src="src/android/com/plugin/android-support-v4.jar" target-dir="libs/"/>
+		<lib-file src="extras/android/support/v4/android-support-v4.jar" custom="false"/>
 
 	</platform>
 

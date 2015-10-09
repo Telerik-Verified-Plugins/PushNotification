@@ -15,9 +15,12 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import java.util.Random;
-
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 /*
  * Implementation of GCMBroadcastReceiver that hard-wires the intent service to be 
  * com.plugin.gcm.GcmntentService, instead of your_package.GcmIntentService 
@@ -105,18 +108,35 @@ public class CordovaGCMBroadcastReceiver extends WakefulBroadcastReceiver {
 			}
 		}
 
-		NotificationCompat.Builder mBuilder =
-				new NotificationCompat.Builder(context)
-						.setDefaults(defaults)
-						.setSmallIcon(getSmallIcon(context, extras))
-						.setWhen(System.currentTimeMillis())
-						.setContentTitle(extras.getString("title"))
-						.setTicker(extras.getString("title"))
-						.setContentIntent(contentIntent)
-            .setColor(getColor(extras))
-						.setAutoCancel(true);
-
 		String message = extras.getString("message");
+        Bitmap image = null;
+        String url = extras.getString("imageUrl");
+        if(url!=null){
+            try {
+                URL imageUrl = new URL(url);
+                image = BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream());
+            }catch (MalformedURLException e){
+                Log.w("GCMIntentService", "Incorrect URL : " + url );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setPriority(Notification.PRIORITY_MAX)
+                        .setDefaults(defaults)
+                        .setSmallIcon(context.getApplicationInfo().icon)
+                        .setWhen(System.currentTimeMillis())
+                        .setContentTitle(extras.getString("title"))
+                        .setTicker(extras.getString("title"))
+                        .setContentIntent(contentIntent)
+                        .setAutoCancel(true);
+        if (image != null) {
+            mBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(image).setSummaryText(message));
+        } else{
+            mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(message));
+        }
 		if (message != null) {
 			mBuilder.setContentText(message);
 		} else {

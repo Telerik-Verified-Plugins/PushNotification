@@ -165,12 +165,18 @@ public class CordovaGCMBroadcastReceiver extends WakefulBroadcastReceiver {
                     new NotificationCompat.Builder(context)
                             .setPriority(Notification.PRIORITY_MAX)
                             .setDefaults(defaults)
-                            .setSmallIcon(context.getApplicationInfo().icon)
+                            //.setSmallIcon(context.getApplicationInfo().icon)
                             .setWhen(System.currentTimeMillis())
                             .setContentTitle(extras.getString("title"))
                             .setTicker(extras.getString("title"))
                             .setContentIntent(contentIntent)
                             .setAutoCancel(true);
+            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP){
+                mBuilder.setSmallIcon(context.getApplicationInfo().icon);
+            } else{
+                mBuilder.setSmallIcon(context.getResources().getIdentifier("icon_n", "drawable", context.getPackageName()))
+                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),context.getApplicationInfo().icon));
+            }
             if (image != null) {
                 mBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(image).setSummaryText(message));
             } else {

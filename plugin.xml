@@ -35,7 +35,7 @@
 	<!-- android -->
 	<platform name="android">
 
-		<framework src="com.google.android.gms:play-services:+" />
+		<framework src="com.google.android.gms:play-services-gcm:+" />
 
 		<config-file target="res/xml/config.xml" parent="/*">
 			<feature name="PushPlugin">

@@ -163,7 +163,7 @@ public class CordovaGCMBroadcastReceiver extends WakefulBroadcastReceiver {
 
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(context)
-                            .setPriority(Notification.PRIORITY_MAX)
+                            .setPriority(Notification.PRIORITY_HIGH)
                             .setDefaults(defaults)
                             //.setSmallIcon(context.getApplicationInfo().icon)
                             .setWhen(System.currentTimeMillis())

@@ -73,6 +73,19 @@
 		<!--framework src="src/android/shrinkresources.gradle" custom="true" type="gradleReference" /-->
 	</platform>
 
+	<!-- blackberry10 -->
+	<platform name="blackberry10">
+		<dependency id="com.blackberry.app" />
+		<dependency id="com.blackberry.push" />
+		<dependency id="com.blackberry.invoked" />
+		<config-file target="www/config.xml" parent="/widget">
+			<feature name="PushPlugin" value="PushPlugin" />
+		</config-file>
+		<js-module src="www/blackberry10/PushPluginProxy.js" name="PushPluginProxy" >
+			<runs />
+		</js-module>
+	</platform>
+
 	<!-- ios -->
 	<platform name="ios">
 

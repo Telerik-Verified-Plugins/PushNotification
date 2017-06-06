@@ -96,7 +96,35 @@ For further information you can take a look into the Backend Services hybrid pus
             		]
           	}
       	);
-            
+
+
+- Add notification actions (Android only)
+
+		// Add actions to the data sent by the server. Everything in data
+		// will be in the "payload" key of the ECB callback on the client,
+		// so if you want to pass any extra data to the client, you can
+		// add it here. We will also add an "action" key to the data passed
+		// to the ECB callback with the "id" of the selected action as the
+		// value. Add any icons you want to use for actions to
+		// "res/drawable-<density>/" folders. If the "doNothing" key for an
+		// action is set te true, selecting that action will simply dismiss
+		// the notification and do nothing else.
+		"data": {
+			"title": "Hello",
+			"message": "Do you want to do something?",
+			"my_extra_data1": "some data1",
+			"some_other_data2": "some data2",
+			"actions": [{
+				"id": "yes",
+				"title": "Yes",
+				"icon": "ic_yes"
+			}, {
+				"id": "no",
+				"title": "No",
+				"icon": "ic_no",
+				"doNothing": true
+			}]
+		}
 
 - iOS 9 text input support (available from v3.1 and above)
 

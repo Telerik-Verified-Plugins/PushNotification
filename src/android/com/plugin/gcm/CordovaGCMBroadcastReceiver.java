@@ -15,17 +15,20 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Random;
 
 /*
- * Implementation of GCMBroadcastReceiver that hard-wires the intent service to be 
- * com.plugin.gcm.GcmntentService, instead of your_package.GcmIntentService 
+ * Implementation of GCMBroadcastReceiver that hard-wires the intent service to be
+ * com.plugin.gcm.GcmntentService, instead of your_package.GcmIntentService
  */
 public class CordovaGCMBroadcastReceiver extends WakefulBroadcastReceiver {
 	private static final String TAG = "GcmIntentService";
+	public static final String DO_NOTHING = "DO_NOTHING";
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -90,13 +93,13 @@ public class CordovaGCMBroadcastReceiver extends WakefulBroadcastReceiver {
 
 
 		NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		String appName = getAppName(context);
+		String appName = PushHandlerActivity.getAppName(context);
 
 		Intent notificationIntent = new Intent(context, PushHandlerActivity.class);
 		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		notificationIntent.putExtra("pushBundle", extras);
 
-    PendingIntent contentIntent = PendingIntent.getActivity(context, notId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+		PendingIntent contentIntent = PendingIntent.getActivity(context, notId, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		int defaults = Notification.DEFAULT_ALL;
 
@@ -117,6 +120,41 @@ public class CordovaGCMBroadcastReceiver extends WakefulBroadcastReceiver {
 						.setContentIntent(contentIntent)
             .setColor(getColor(extras))
 						.setAutoCancel(true);
+
+		// Add any actions to the notifications
+		if(extras.get("actions") != null) {
+			try {
+				JSONArray actions = new JSONArray((String) extras.get("actions"));
+				for(int i = 0; i < actions.length(); i++) {
+					JSONObject action = actions.getJSONObject(i);
+					int pendingFlag;
+					Bundle actionExtras = (Bundle) extras.clone();
+					actionExtras.putString("action_taken", action.getString("id"));
+					if(action.has("icon")) {
+						actionExtras.putString("smallIcon", action.getString("icon"));
+					}
+					Intent actionIntent;
+					boolean doNothing = action.has("doNothing") && action.getBoolean("doNothing");
+					if (doNothing) {
+						actionIntent = new Intent(DO_NOTHING);
+					} else {
+						actionIntent = new Intent(context, PushHandlerActivity.class);
+					}
+					actionIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					actionIntent.putExtra("pushBundle", actionExtras);
+					actionIntent.putExtra(PushHandlerActivity.NOTIFICATION_ID, notId);
+					PendingIntent actionPendingIntent;
+					if (doNothing) {
+						actionPendingIntent = PendingIntent.getBroadcast(context, notId+i+1, actionIntent, 0);
+					} else {
+						actionPendingIntent = PendingIntent.getActivity(context, notId+i+1, actionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+					}
+					mBuilder = mBuilder.addAction(getSmallIcon(context, actionExtras), action.getString("title"), actionPendingIntent);
+				}
+			} catch (JSONException exception) {
+				Log.d(TAG, "JSON Exception was had!");
+			}
+		}
 
 		String message = extras.getString("message");
 		if (message != null) {
@@ -148,15 +186,6 @@ public class CordovaGCMBroadcastReceiver extends WakefulBroadcastReceiver {
 		
 		final Notification notification = mBuilder.build();
 		mNotificationManager.notify(appName, notId, notification);
-	}
-
-	private static String getAppName(Context context) {
-		CharSequence appName =
-				context
-						.getPackageManager()
-						.getApplicationLabel(context.getApplicationInfo());
-
-		return (String) appName;
 	}
 
   private int getColor(Bundle extras) {

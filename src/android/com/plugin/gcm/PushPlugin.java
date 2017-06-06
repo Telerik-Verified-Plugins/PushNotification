@@ -2,7 +2,10 @@ package com.plugin.gcm;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -254,6 +257,18 @@ public class PushPlugin extends CordovaPlugin {
 		super.initialize(cordova, webView);
 		gForeground = true;
 		checkPlayServices();
+
+		// Register a receiver for action with doNothing=true
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(CordovaGCMBroadcastReceiver.DO_NOTHING);
+		getApplicationContext().registerReceiver(new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				NotificationManager manager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+				String appName = PushHandlerActivity.getAppName(getApplicationContext());
+				manager.cancel(appName, intent.getIntExtra(PushHandlerActivity.NOTIFICATION_ID, -1));
+			}
+		}, filter);
 	}
 
 	@Override

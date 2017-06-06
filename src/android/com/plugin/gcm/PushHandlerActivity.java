@@ -8,14 +8,18 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class PushHandlerActivity extends Activity
 {
-	private static String TAG = "PushHandlerActivity"; 
+	private static String TAG = "PushHandlerActivity";
+	public static final String NOTIFICATION_ID = "NOTIFICATION_ID";
 
 	/*
-	 * this activity will be started if the user touches a notification that we own. 
+	 * this activity will be started if the user touches a notification that we own.
 	 * We send it's data off to the push plugin for processing.
-	 * If needed, we boot up the main activity to kickstart the application. 
+	 * If needed, we boot up the main activity to kickstart the application.
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
 	@Override
@@ -27,6 +31,13 @@ public class PushHandlerActivity extends Activity
 		boolean isPushPluginActive = PushPlugin.isActive();
 		processPushBundle(isPushPluginActive);
 
+		int notificationId = getIntent().getIntExtra(NOTIFICATION_ID, -1);
+		if(notificationId != -1) {
+			NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+			String appName = getAppName(getApplicationContext());
+			manager.cancel(appName, notificationId);
+		}
+
 		finish();
 
 		if (!isPushPluginActive) {
@@ -34,8 +45,17 @@ public class PushHandlerActivity extends Activity
 		}
 	}
 
+	public static String getAppName(Context context) {
+		CharSequence appName =
+				context
+						.getPackageManager()
+						.getApplicationLabel(context.getApplicationInfo());
+
+		return (String) appName;
+	}
+
 	/**
-	 * Takes the pushBundle extras from the intent, 
+	 * Takes the pushBundle extras from the intent,
 	 * and sends it through to the PushPlugin for processing.
 	 */
 	private void processPushBundle(boolean isPushPluginActive)
@@ -44,7 +64,7 @@ public class PushHandlerActivity extends Activity
 
 		if (extras != null)	{
 			Bundle originalExtras = extras.getBundle("pushBundle");
-            
+
             originalExtras.putBoolean("foreground", false);
             originalExtras.putBoolean("coldstart", !isPushPluginActive);
 
@@ -58,7 +78,7 @@ public class PushHandlerActivity extends Activity
 	private void forceMainActivityReload()
 	{
 		PackageManager pm = getPackageManager();
-		Intent launchIntent = pm.getLaunchIntentForPackage(getApplicationContext().getPackageName());    		
+		Intent launchIntent = pm.getLaunchIntentForPackage(getApplicationContext().getPackageName());
 		startActivity(launchIntent);
 	}
 
